@@ -1,3 +1,4 @@
+# Updated to July 7, 2022
 import random
 import requests
 from bs4 import BeautifulSoup
