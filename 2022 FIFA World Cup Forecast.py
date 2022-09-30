@@ -1,35 +1,48 @@
-# Updated to July 7, 2022
+# Updated to September 30, 2022
+import sys
 import random
-import requests
-from bs4 import BeautifulSoup
 import statistics
-from datetime import date
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
-# This scrapes data from a website of international elo ratings updated after every match
-today = date.today()
-month_and_day = today.strftime("%m %d").split()
-month = month_and_day[0]
-day = month_and_day[1]
-URL = 'https://www.international-football.net/elo-ratings-table?year=2022&month=' + month +'&day=' + day
-page = requests.get(URL)
-soup = BeautifulSoup(page.content, 'html.parser')
-search = soup.find_all(class_='survol')
+# finds the local file for your computer for the webdriver
+# this is commented out because it is not needed after one run and is different for every user
+# sys.path.append('C:\\Users\\ppp\\Selenium\\chromedriver_win32\\chromedriver.exe')
 
-# This stores elo ratings for every nation into a dictionary
+# gets the website where the elo ratings are located
+driver.get('http://www.eloratings.net/')
+# waits 10 seconds for the website to load
+driver.implicitly_wait(10)
+
+# uses XPath to scrape data
+odd_ranked_teams = driver.find_elements(By.XPATH, "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row even']")
+even_ranked_teams = driver.find_elements(By.XPATH, "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row odd']")
+# Translates HTML to text and stores national elo ratings into a dictionary
 team_elo_ratings = {}
-for line in search:
-    info = line.text
-    start_country_name = False
-    country = ''
-    for char_num, char in enumerate(info):
-        if start_country_name:
-            if char.isnumeric():
-                team_elo_ratings.update({country: int(info[char_num:])})
-                break
-            else:
-                country += char
-        elif char == '.':
-            start_country_name = True
+for team in odd_ranked_teams:
+    widget_content = team.text.split()
+    country_name = ''
+    for column_num, column in enumerate(widget_content):
+        if column_num > 0 and column.isnumeric():
+            team_rating = int(column)
+            words_in_country_name = widget_content[1:column_num]
+            country_name = ' '.join(words_in_country_name)
+            team_elo_ratings.update({country_name: team_rating})
+            break
+for team in even_ranked_teams:
+    widget_content = team.text.split()
+    country_name = ''
+    for column_num, column in enumerate(widget_content):
+        if column_num > 0 and column.isnumeric():
+            team_rating = int(column)
+            words_in_country_name = widget_content[1:column_num]
+            country_name = ' '.join(words_in_country_name)
+            team_elo_ratings.update({country_name: team_rating})
+            break
+driver.quit()
 
 # This updates Qatar's elo rating to reflect its home advantage
 qatar_original_elo = team_elo_ratings['Qatar']
