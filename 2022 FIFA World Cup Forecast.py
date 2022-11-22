@@ -1,7 +1,8 @@
-# Updated to September 30, 2022
 import sys
 import random
 import statistics
+from bs4 import BeautifulSoup
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -44,9 +45,48 @@ for team in even_ranked_teams:
             break
 driver.quit()
 
+
+# gets SPI ratings from ESPN/FiveThirtyEight
+url = 'https://projects.fivethirtyeight.com/soccer-api/international/spi_global_rankings_intl.csv'
+spi_data = requests.get(url).text.split(',')[6:]
+spi_dict = {}
+
+# changes SPi names to elo names if conflicting
+spi_to_elo_change = {'USA': 'United States', 'Bosnia and Herzegovina': 'Bosnia/Herzegovina',
+                     'United Arab Emirates': 'UAE', 'Swaziland': 'Eswatini', 'Antigua and Barbuda': 'Antigua & Barbuda',
+                     'Sao Tome and Principe': 'São Tomé & Príncipe',
+                     'St. Vincent and the Grenadines': 'St Vincent/Gren', 'Chinese Taipei': 'Taiwan',
+                     'Timor-Leste': 'East Timor', 'Czech Republic': 'Czechia', 'Rep of Ireland': 'Ireland',
+                     'Cape Verde Islands': 'Cape Verde', 'China PR': 'China', 'Congo DR': 'DR Congo',
+                     'Curacao': 'Curaçao', 'Central African Republic': 'Central African Rep',
+                     'St. Kitts and Nevis': 'Saint Kitts and Nevis', 'St. Lucia': 'Saint Lucia',
+                     'St. Martin': 'Saint Martin', 'Turks and Caicos Islands': 'Turks and Caicos', 'Macau': 'Macao'
+                     }
+for item_num, item in enumerate(spi_data):
+    if item_num % 5 == 0:
+        rating = float(spi_data[item_num + 4].split()[0])
+        elo_adjusted_rating = 1000 + 10 * rating
+        if item in spi_to_elo_change:
+            item = spi_to_elo_change[item]
+        spi_dict.update({item: elo_adjusted_rating})
+
+# combines SPI and world elo ratings
+for team, elo_rating in team_elo_ratings.items():
+    if team in ['Northern Cyprus', 'Kurdistan', 'Réunion', 'Saint Barthélemy', 'Wallis and Futuna', 'Vatican',
+                'Falkland Islands', 'Eastern Samoa', 'Palau', 'Mayotte', 'Somaliland', 'Western Sahara', 'Greenland',
+                'Monaco', 'Chagos Islands', 'St Pierre & Miquelon', 'Tibet', 'FS Micronesia', 'Kiribati',
+                'Northern Marianas', 'Niue']:
+        continue
+        # this is because there is no SPI rating for these countries, and they are not officially FIFA members
+    spi_elo = spi_dict[team]
+    new_rating = (elo_rating + spi_elo) / 2
+    team_elo_ratings.update({team: new_rating})
+
+
 # This updates Qatar's elo rating to reflect its home advantage
 qatar_original_elo = team_elo_ratings['Qatar']
 team_elo_ratings.update({'Qatar': qatar_original_elo + 100})
+
 
 # this function returns a simulation of the results of a game given the elo ratings of the two teams
 def match_result(team_1_elo, team_2_elo):
@@ -105,7 +145,8 @@ class group_stage:
     
     # This function returns a list of all of the Group State matches already completed
     def matches_completed(self):
-        matches_completed = []
+        matches_completed = [['Qatar', 'Ecuador', 0, 2], ['Senegal', 'Netherlands', 0, 2], ['England', 'Iran', 6, 2],
+                             ['United States', 'Wales', 1, 1]]
         return matches_completed
     
     # This function returns the various matchups within a particular group
@@ -290,6 +331,34 @@ for simulation in range(10000):
     ks_sim = knockout_stage(group_winners, group_runner_ups)
     # Simulates Knockout Stage
     quarterfinalists, semifinalists, finalists, champion = ks_sim.world_cup_final()
+    # for the purposes of extracting a random simulation
+    # if simulation == 0:
+    #     print('Round of 16')
+    #     for matchup in ks_sim.round_of_16_matchups:
+    #         print(matchup[0], 'vs', matchup[1])
+    #     print()
+    #     print('Quarterfinals')
+    #     matchup = []
+    #     for team in quarterfinalists:
+    #         if len(matchup) != 2:
+    #             matchup.append(team)
+    #         if len(matchup) == 2:
+    #             print(matchup[0], 'vs', matchup[1])
+    #             matchup = []
+    #     print()
+    #     print('Semifinals')
+    #     matchup = []
+    #     for team in semifinalists:
+    #         if len(matchup) != 2:
+    #             matchup.append(team)
+    #         if len(matchup) == 2:
+    #             print(matchup[0], 'vs', matchup[1])
+    #             matchup = []
+    #     print()
+    #     print('World Cup Final')
+    #     print(finalists[0], 'vs', finalists[1])
+    #     print()
+    #     print('World Cup Champions:', champion)
     # Stores the results of the Knockout Stage
     for team in wc_summary:
         if team[0] == champion:
