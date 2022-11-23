@@ -146,7 +146,10 @@ class group_stage:
     # This function returns a list of all of the Group State matches already completed
     def matches_completed(self):
         matches_completed = [['Qatar', 'Ecuador', 0, 2], ['Senegal', 'Netherlands', 0, 2], ['England', 'Iran', 6, 2],
-                             ['United States', 'Wales', 1, 1]]
+                             ['United States', 'Wales', 1, 1], ['Argentina', 'Saudi Arabia', 1, 2],
+                             ['Denmark', 'Tunisia', 0, 0], ['Mexico', 'Poland', 0, 0], ['France', 'Australia', 4, 1],
+                             ['Morocco', 'Croatia', 0, 0], ['Germany', 'Japan', 1, 2], ['Spain', 'Costa Rica', 7, 0],
+                             ['Belgium', 'Canada', 1, 0]]
         return matches_completed
     
     # This function returns the various matchups within a particular group
