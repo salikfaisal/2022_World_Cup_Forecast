@@ -3,10 +3,12 @@ import random
 import statistics
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
 # finds the local file for your computer for the webdriver
@@ -19,8 +21,10 @@ driver.get('http://www.eloratings.net/')
 driver.implicitly_wait(10)
 
 # uses XPath to scrape data
-odd_ranked_teams = driver.find_elements(By.XPATH, "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row even']")
-even_ranked_teams = driver.find_elements(By.XPATH, "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row odd']")
+odd_ranked_teams = driver.find_elements(By.XPATH,
+                                        "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row even']")
+even_ranked_teams = driver.find_elements(By.XPATH,
+                                         "//div[@id='main']/div[@id='maindiv']/div[@id='maintable_World']/div[@class='slick-viewport']/div[@class='grid-canvas']/div[@class='ui-widget-content slick-row odd']")
 # Translates HTML to text and stores national elo ratings into a dictionary
 team_elo_ratings = {}
 for team in odd_ranked_teams:
@@ -44,7 +48,6 @@ for team in even_ranked_teams:
             team_elo_ratings.update({country_name: team_rating})
             break
 driver.quit()
-
 
 # gets SPI ratings from ESPN/FiveThirtyEight
 url = 'https://projects.fivethirtyeight.com/soccer-api/international/spi_global_rankings_intl.csv'
@@ -82,7 +85,6 @@ for team, elo_rating in team_elo_ratings.items():
     new_rating = (elo_rating + spi_elo) / 2
     team_elo_ratings.update({team: new_rating})
 
-
 # This updates Qatar's elo rating to reflect its home advantage
 qatar_original_elo = team_elo_ratings['Qatar']
 team_elo_ratings.update({'Qatar': qatar_original_elo + 100})
@@ -98,8 +100,9 @@ def match_result(team_1_elo, team_2_elo):
     # the goal difference as a result of a random simulation
     team_1_margin = round(statistics.NormalDist(team_1_margin_mean, 1.3).inv_cdf(random.random()))
     # the goal probability distribution from 1826 matches in the 2020-21 season in Europe's top 5 leagues
-    goal_prob = [0.25985761226725085, 0.3417305585980285, 0.22343921139101863, 0.1119934282584885, 0.0443592552026287, 
-    0.014786418400876232, 0.0024644030668127055, 0.0008214676889375684, 0.0002738225629791895, 0.0002738225629791895]
+    goal_prob = [0.25985761226725085, 0.3417305585980285, 0.22343921139101863, 0.1119934282584885, 0.0443592552026287,
+                 0.014786418400876232, 0.0024644030668127055, 0.0008214676889375684, 0.0002738225629791895,
+                 0.0002738225629791895]
     gp_list = []
     if abs(team_1_margin) > 9:
         winning_goal_count = abs(team_1_margin)
@@ -109,7 +112,7 @@ def match_result(team_1_elo, team_2_elo):
         total = sum(gp_list)
         cum = 0
         for goal_count, goal_probability in enumerate(gp_list):
-            gp_list[goal_count] = goal_probability/total
+            gp_list[goal_count] = goal_probability / total
         goal_result = random.random()
         for gc, gp in enumerate(gp_list):
             cum += gp
@@ -126,11 +129,12 @@ def match_result(team_1_elo, team_2_elo):
         home_goals = away_goals + team_1_margin
     return [home_goals, away_goals]
 
+
 # World Cup groups initialized
 groups = [['Qatar', 'Ecuador', 'Senegal', 'Netherlands'], ['England', 'Iran', 'United States', 'Wales'],
-['Argentina', 'Saudi Arabia', 'Mexico', 'Poland'], ['France', 'Australia', 'Denmark', 'Tunisia'], 
-['Spain', 'Costa Rica', 'Germany', 'Japan'], ['Belgium', 'Canada', 'Morocco', 'Croatia'], 
-['Brazil', 'Serbia', 'Switzerland', 'Cameroon'], ['Portugal', 'Ghana', 'Uruguay', 'South Korea']]
+          ['Argentina', 'Saudi Arabia', 'Mexico', 'Poland'], ['France', 'Australia', 'Denmark', 'Tunisia'],
+          ['Spain', 'Costa Rica', 'Germany', 'Japan'], ['Belgium', 'Canada', 'Morocco', 'Croatia'],
+          ['Brazil', 'Serbia', 'Switzerland', 'Cameroon'], ['Portugal', 'Ghana', 'Uruguay', 'South Korea']]
 wc_summary = []
 group_summary = {}
 for group_number, group in enumerate(groups):
@@ -138,20 +142,22 @@ for group_number, group in enumerate(groups):
         wc_summary.append([team, 0, 0, 0, 0, 0, chr(65 + group_number)])
         group_summary.update({team: [0, 0, 0, 0, 0, 0, chr(65 + group_number)]})
 
+
 # A class for functions used for the Group Stage
 class group_stage:
     def __init__(self, group):
         self.group = group
-    
-    # This function returns a list of all of the Group State matches already completed
+
+    # This function returns a list of all the Group State matches already completed
     def matches_completed(self):
         matches_completed = [['Qatar', 'Ecuador', 0, 2], ['Senegal', 'Netherlands', 0, 2], ['England', 'Iran', 6, 2],
                              ['United States', 'Wales', 1, 1], ['Argentina', 'Saudi Arabia', 1, 2],
                              ['Denmark', 'Tunisia', 0, 0], ['Mexico', 'Poland', 0, 0], ['France', 'Australia', 4, 1],
                              ['Morocco', 'Croatia', 0, 0], ['Germany', 'Japan', 1, 2], ['Spain', 'Costa Rica', 7, 0],
-                             ['Belgium', 'Canada', 1, 0]]
+                             ['Belgium', 'Canada', 1, 0], ['Switzerland', 'Cameroon', 1, 0],
+                             ['Uruguay', 'South Korea', 0, 0], ['Portugal', 'Ghana', 3, 2], ['Brazil', 'Serbia', 2, 0]]
         return matches_completed
-    
+
     # This function returns the various matchups within a particular group
     def group_matches(self):
         matches = []
@@ -160,7 +166,7 @@ class group_stage:
                 if team_1_pos < team_2_pos:
                     matches.append([team_1, team_2])
         return matches
-    
+
     # This function returns the elo ratings for each team in a Group Stage match
     def match_ratings(self):
         matches = self.group_matches()
@@ -171,7 +177,7 @@ class group_stage:
                 rating.append(team_elo_ratings[team])
             ratings.append(rating)
         return ratings
-    
+
     # This function returns a final simulated group
     def group_simulation(self):
         table = {}
@@ -222,6 +228,7 @@ class group_stage:
         standings = sorted(standings, key=lambda data: (data[1], data[4], data[2]), reverse=True)
         return standings
 
+
 # A class for functions used during the knockout stage
 class knockout_stage:
     # This sets the matchups for the knockout stage based on the results of the Group Stage
@@ -231,7 +238,7 @@ class knockout_stage:
             matchup = [group_winners[match[0]], group_runner_ups[match[1]]]
             round_of_16_matchups[match_number] = matchup
         self.round_of_16_matchups = round_of_16_matchups
-    
+
     # This returns the nations that advanced to the quarterfinals through simulations or returns the actual quarterfinalists 
     # if the matches have been completed
     def round_of_16(self):
@@ -248,9 +255,9 @@ class knockout_stage:
             else:
                 quarterfinalists.append(match[random.randrange(0, 2)])
         return quarterfinalists
-    
+
     # This returns the nations that advanced to the quarterfinals and semifinals through simulations or returns the actual 
-    #quarterfinalists add semifinalists if the matches have been completed
+    # quarterfinalists add semifinalists if the matches have been completed
     def quarterfinals(self):
         quarterfinalists = self.round_of_16()
         semifinalists = []
@@ -272,9 +279,9 @@ class knockout_stage:
             else:
                 semifinalists.append(match[random.randrange(0, 2)])
         return quarterfinalists, semifinalists
-    
+
     # This returns the nations that advanced to the quarterfinals, semifinals, and final through simulations or returns the actual 
-    #quarterfinalists, semifinalists, and finalists if the matches have been completed
+    # quarterfinalists, semifinalists, and finalists if the matches have been completed
     def semifinals(self):
         quarterfinalists, semifinalists = self.quarterfinals()
         finalists = []
@@ -296,8 +303,9 @@ class knockout_stage:
             else:
                 finalists.append(match[random.randrange(0, 2)])
         return quarterfinalists, semifinalists, finalists
-    # This returns the nations that advanced to the quarterfinals, semifinals, final, and champion through simulations or returns 
-    # the actual quarterfinalists, semifinalists, finalists and champions if the matches have been completed
+
+    # This returns the nations that advanced to the quarterfinals, semifinals, final, and champion through simulations
+    # or returns the actual quarterfinalists, semifinalists, finalists and champions if the matches have been completed
     def world_cup_final(self):
         quarterfinalists, semifinalists, finalists = self.semifinals()
         team_1_elo = team_elo_ratings[finalists[0]]
@@ -390,7 +398,7 @@ for team, data in group_summary.items():
     team_info = [team]
     team_info.extend(data)
     group_sim_summary.append(team_info)
-group_sim_summary = sorted(group_sim_summary, key=lambda data: (data[1], data[3], data[4], data[5]), reverse=True)
+group_sim_summary = sorted(group_sim_summary, key=lambda data: (data[3], data[4], data[5]), reverse=True)
 group_sim_summary = sorted(group_sim_summary, key=lambda data: data[7])
 wc_summary = sorted(wc_summary, key=lambda data: (data[5], data[4], data[3], data[2], data[1]), reverse=True)
 
@@ -402,20 +410,21 @@ for team_number, team_stats in enumerate(group_sim_summary):
         print()
         group = 'Group ' + team_stats[7]
         print(group_format.format(group=group))
-        print(line_format.format(pos='Pos', team='Team', Pts='Est. Points', GD='Est. GD', KS='Advance' , First='1st',
-        Second='2nd', Third='3rd', Fourth='4th'))
+        print(line_format.format(pos='Pos', team='Team', Pts='Est. Points', GD='Est. GD', KS='Advance', First='1st',
+                                 Second='2nd', Third='3rd', Fourth='4th'))
         print('-' * 96)
     position = team_number % 4 + 1
     team = team_stats[0]
     points = round(team_stats[1] / 10000, 2)
     gd = round(team_stats[2] / 10000, 2)
-    advance = str(round((team_stats[3] + team_stats[4])/100)) + '%'
-    first = str(round(team_stats[3]/100)) + '%'
-    second = str(round(team_stats[4]/100)) + '%'
-    third = str(round(team_stats[5]/100)) + '%'
-    fourth = str(round(team_stats[6]/100)) + '%'
-    print(line_format.format(pos=position, team=team, Pts=points, GD=gd, KS=advance, First=first, Second=second, Third=third,
-    Fourth=fourth))
+    advance = str(round((team_stats[3] + team_stats[4]) / 100)) + '%'
+    first = str(round(team_stats[3] / 100)) + '%'
+    second = str(round(team_stats[4] / 100)) + '%'
+    third = str(round(team_stats[5] / 100)) + '%'
+    fourth = str(round(team_stats[6] / 100)) + '%'
+    print(line_format.format(pos=position, team=team, Pts=points, GD=gd, KS=advance, First=first, Second=second,
+                             Third=third,
+                             Fourth=fourth))
 
 print()
 print()
@@ -423,14 +432,44 @@ line_format = '{Pos:^4}|{team:^15}|{R16:^15}|{QF:^18}|{SF:^12}|{F:^10}|{W:^18}|'
 wc_format = '{title:^99}'
 print(wc_format.format(title='2022 FIFA World Cup Forecast'))
 print()
-print(line_format.format(Pos='Pos', team='Team', R16='Round of 16', QF='Quarterfinals', SF='Semifinals', F='Final', 
-W='Win World Cup'))
+print(line_format.format(Pos='Pos', team='Team', R16='Round of 16', QF='Quarterfinals', SF='Semifinals', F='Final',
+                         W='Win World Cup'))
 print('-' * 99)
 for rank, team_stats in enumerate(wc_summary):
     team = team_stats[0]
-    make_r16 = str(round(team_stats[1] / 100)) +'%'
-    make_qf = str(round(team_stats[2] / 100)) +'%'
-    make_sf = str(round(team_stats[3] / 100)) +'%'
-    make_final = str(round(team_stats[4] / 100)) +'%'
-    win_wc = str(round(team_stats[5] / 100)) +'%'
-    print(line_format.format(Pos=rank+1, team=team, R16=make_r16, QF=make_qf, SF=make_sf, F=make_final, W=win_wc))
+    make_r16 = str(round(team_stats[1] / 100)) + '%'
+    make_qf = str(round(team_stats[2] / 100)) + '%'
+    make_sf = str(round(team_stats[3] / 100)) + '%'
+    make_final = str(round(team_stats[4] / 100)) + '%'
+    win_wc = str(round(team_stats[5] / 100)) + '%'
+    print(line_format.format(Pos=rank + 1, team=team, R16=make_r16, QF=make_qf, SF=make_sf, F=make_final, W=win_wc))
+
+# stores the data for the Group Stage in a Data Frame
+for team_number, country in enumerate(group_sim_summary):
+    new_country_data = [country[-1]]
+    position = team_number % 4 + 1
+    new_country_data.append(position)
+    new_country_data.append(country[0])
+    for data in country[1: -1]:
+        new_country_data.append(data / 10000)
+    advance = new_country_data[5] + new_country_data[6]
+    new_country_data.insert(5, advance)
+    group_sim_summary[team_number] = new_country_data
+
+group_df = pd.DataFrame(group_sim_summary, columns=['Group', 'Group_Position', 'Team', 'Avg_Pts', 'Avg_GD',
+                                                    'Advance', '1st', '2nd', '3rd', '4th'])
+
+# stores the data for the Knockout Stage in a Data Frame
+for team_number, country_data in enumerate(wc_summary):
+    new_country_data = [team_number + 1, country_data[0], country_data[-1]]
+    for data in country_data[1:-1]:
+        new_country_data.append(data / 10000)
+    wc_summary[team_number] = new_country_data
+
+ks_df = pd.DataFrame(wc_summary, columns=['Rank', 'Team', 'Group', 'Make_R16', 'Make_QF', 'Make_SF', 'Make_Final',
+                                          'Win_World_Cup'])
+
+
+# exports Results to CSV files
+group_df.to_csv("Group_Stage_Forecast_Results.csv", index=False, header=True)
+ks_df.to_csv("Knockout_Stage_Forecast_Results.csv", index=False, header=True)
