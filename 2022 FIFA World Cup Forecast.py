@@ -155,7 +155,9 @@ class group_stage:
                              ['Denmark', 'Tunisia', 0, 0], ['Mexico', 'Poland', 0, 0], ['France', 'Australia', 4, 1],
                              ['Morocco', 'Croatia', 0, 0], ['Germany', 'Japan', 1, 2], ['Spain', 'Costa Rica', 7, 0],
                              ['Belgium', 'Canada', 1, 0], ['Switzerland', 'Cameroon', 1, 0],
-                             ['Uruguay', 'South Korea', 0, 0], ['Portugal', 'Ghana', 3, 2], ['Brazil', 'Serbia', 2, 0]]
+                             ['Uruguay', 'South Korea', 0, 0], ['Portugal', 'Ghana', 3, 2], ['Brazil', 'Serbia', 2, 0],
+                             ['Wales', 'Iran', 0, 2], ['Qatar', 'Senegal', 1, 3], ['Netherlands', 'Ecuador', 1, 1],
+                             ['England', 'United States', 0, 0]]
         return matches_completed
 
     # This function returns the various matchups within a particular group
