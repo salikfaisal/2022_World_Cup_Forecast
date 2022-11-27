@@ -159,7 +159,8 @@ class group_stage:
                              ['Wales', 'Iran', 0, 2], ['Qatar', 'Senegal', 1, 3], ['Netherlands', 'Ecuador', 1, 1],
                              ['England', 'United States', 0, 0], ['Tunisia', 'Australia', 0, 1],
                              ['Poland', 'Saudi Arabia', 2, 0], ['France', 'Denmark', 2, 1],
-                             ['Argentina', 'Mexico', 2, 0]]
+                             ['Argentina', 'Mexico', 2, 0], ['Japan', 'Costa Rica', 0, 1], ['Belgium', 'Morocco', 0, 2],
+                             ['Croatia', 'Canada', 4, 1], ['Spain', 'Germany', 1, 1]]
 
         return matches_completed
 
@@ -403,7 +404,8 @@ for team, data in group_summary.items():
     team_info = [team]
     team_info.extend(data)
     group_sim_summary.append(team_info)
-group_sim_summary = sorted(group_sim_summary, key=lambda data: (data[3], data[4], data[5]), reverse=True)
+group_sim_summary = sorted(group_sim_summary, key=lambda data: ((data[3] + data[4]), data[3], data[4], data[5]),
+                           reverse=True)
 group_sim_summary = sorted(group_sim_summary, key=lambda data: data[7])
 wc_summary = sorted(wc_summary, key=lambda data: (data[5], data[4], data[3], data[2], data[1]), reverse=True)
 
