@@ -160,7 +160,10 @@ class group_stage:
                              ['England', 'United States', 0, 0], ['Tunisia', 'Australia', 0, 1],
                              ['Poland', 'Saudi Arabia', 2, 0], ['France', 'Denmark', 2, 1],
                              ['Argentina', 'Mexico', 2, 0], ['Japan', 'Costa Rica', 0, 1], ['Belgium', 'Morocco', 0, 2],
-                             ['Croatia', 'Canada', 4, 1], ['Spain', 'Germany', 1, 1]]
+                             ['Croatia', 'Canada', 4, 1], ['Spain', 'Germany', 1, 1], ['Cameroon', 'Serbia', 3, 3],
+                             ['South Korea', 'Ghana', 2, 3], ['Brazil', 'Switzerland', 1, 0],
+                             ['Portugal', 'Uruguay', 2, 0], ['Ecuador', 'Senegal', 1, 2],
+                             ['Netherlands', 'Qatar', 2, 0], ['Iran', 'United States', 0, 1], ['Wales', 'England', 0, 3]]
 
         return matches_completed
 
