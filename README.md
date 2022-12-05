@@ -5,4 +5,4 @@ Each team's probabilities are based off of updated games completed in the World 
 
 You can find both the [Group Stage Forecast](https://github.com/salikfaisal/2022_World_Cup_Forecast/blob/main/Group_Stage_Forecast_Results.csv) and the [Knockout Stage Forceast](https://github.com/salikfaisal/2022_World_Cup_Forecast/blob/main/Knockout_Stage_Forecast_Results.csv), which includes the probability of each team winning the World Cup.
 
-Updates are made after the completion of **ALL** matches on a particular day.
+Updates are made after the completion of **ALL** matches on a particular day for the Group Stage and after the completion of all games for a particular Knockout Round.
