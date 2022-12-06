@@ -259,17 +259,18 @@ class knockout_stage:
     # if the matches have been completed
     def round_of_16(self):
         r16_matchups = self.round_of_16_matchups
-        quarterfinalists = []
-        for match in r16_matchups:
-            team_1_elo = team_elo_ratings[match[0]]
-            team_2_elo = team_elo_ratings[match[1]]
-            result = match_result(team_1_elo, team_2_elo)
-            if result[0] > result[1]:
-                quarterfinalists.append(match[0])
-            elif result[0] < result[1]:
-                quarterfinalists.append(match[1])
-            else:
-                quarterfinalists.append(match[random.randrange(0, 2)])
+        quarterfinalists = ['Netherlands', 'Argentina', 'Croatia', 'Brazil', 'England', 'France', 'Morocco', 'Portugal']
+        # # The quarterfinalists have already been determined
+        # for match in r16_matchups:
+        #     team_1_elo = team_elo_ratings[match[0]]
+        #     team_2_elo = team_elo_ratings[match[1]]
+        #     result = match_result(team_1_elo, team_2_elo)
+        #     if result[0] > result[1]:
+        #         quarterfinalists.append(match[0])
+        #     elif result[0] < result[1]:
+        #         quarterfinalists.append(match[1])
+        #     else:
+        #         quarterfinalists.append(match[random.randrange(0, 2)])
         return quarterfinalists
 
     # This returns the nations that advanced to the quarterfinals and semifinals through simulations or returns the actual 
