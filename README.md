@@ -11,7 +11,7 @@ Updates are made after the completion of **ALL** matches on a particular day for
 The chances of each side remaining in the 2022 FIFA World Cup are indicated below:
 
 Team | Make Final | Win World Cup
---- | --- | --- | --- 
+--- | --- | ---
 Argentina | 65% | 39%
 France | 65% | 33%
 Croatia | 35% | 15%
