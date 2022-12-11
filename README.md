@@ -10,13 +10,9 @@ Updates are made after the completion of **ALL** matches on a particular day for
 
 The chances of each side remaining in the 2022 FIFA World Cup are indicated below:
 
-Team | Make Semifinals | Make Final | Win World Cup
+Team | Make Final | Win World Cup
 --- | --- | --- | --- 
-Brazil | 72% | 42% | 27%
-Argentina | 56% | 28% | 16%
-Portugal | 68% | 36% | 16%
-France | 53% | 28% | 13%
-England | 47% | 25% | 10%
-Netherlands | 44% | 20% | 10%
-Croatia | 28% | 10% | 4%
-Morocco | 32% | 11% | 3%
+Argentina | 65% | 39%
+France | 65% | 33%
+Croatia | 35% | 15%
+Morocco | 35% | 12%
