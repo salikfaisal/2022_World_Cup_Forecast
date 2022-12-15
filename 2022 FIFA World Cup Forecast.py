@@ -302,24 +302,25 @@ class knockout_stage:
     # quarterfinalists, semifinalists, and finalists if the matches have been completed
     def semifinals(self):
         quarterfinalists, semifinalists = self.quarterfinals()
-        finalists = []
-        sf_matches = []
-        sf_match = []
-        for team in semifinalists:
-            sf_match.append(team)
-            if len(sf_match) == 2:
-                sf_matches.append(sf_match)
-                sf_match = []
-        for match in sf_matches:
-            team_1_elo = team_elo_ratings[match[0]]
-            team_2_elo = team_elo_ratings[match[1]]
-            result = match_result(team_1_elo, team_2_elo)
-            if result[0] > result[1]:
-                finalists.append(match[0])
-            elif result[0] < result[1]:
-                finalists.append(match[1])
-            else:
-                finalists.append(match[random.randrange(0, 2)])
+        finalists = ['Argentina', 'France']
+        # # The finalists have already been determined
+        # sf_matches = []
+        # sf_match = []
+        # for team in semifinalists:
+        #     sf_match.append(team)
+        #     if len(sf_match) == 2:
+        #         sf_matches.append(sf_match)
+        #         sf_match = []
+        # for match in sf_matches:
+        #     team_1_elo = team_elo_ratings[match[0]]
+        #     team_2_elo = team_elo_ratings[match[1]]
+        #     result = match_result(team_1_elo, team_2_elo)
+        #     if result[0] > result[1]:
+        #         finalists.append(match[0])
+        #     elif result[0] < result[1]:
+        #         finalists.append(match[1])
+        #     else:
+        #         finalists.append(match[random.randrange(0, 2)])
         return quarterfinalists, semifinalists, finalists
 
     # This returns the nations that advanced to the quarterfinals, semifinals, final, and champion through simulations
